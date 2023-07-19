@@ -18,19 +18,17 @@ if len(sys.argv) != 4:
 
 _, model_PATH, in_PATH, out_PATH = sys.argv
 
-tf.reset_default_graph()
-
 IMAGE_SZ = 128
 
 img = np.array(Image.open(in_PATH).convert('RGB'))
 img_p = util.preprocess_images_gen(img / 255.0)
 
-G_Z = tf.placeholder(tf.float32, shape=[1, img_p.shape[1], img_p.shape[2], 4], name='G_Z')
+G_Z = tf.compat.v1.placeholder(tf.float32, shape=[1, img_p.shape[1], img_p.shape[2], 4], name='G_Z')
 G_sample = model.generator(G_Z)
 
-saver = tf.train.Saver()
+saver = tf.compat.v1.train.Saver()
 
-with tf.Session() as sess:
+with tf.compat.v1.Session() as sess:
     saver.restore(sess, model_PATH)
     output, = sess.run([G_sample], feed_dict={G_Z: img_p})
     output = util.norm_image(output[0])
